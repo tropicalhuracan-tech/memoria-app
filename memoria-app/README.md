@@ -1,26 +1,25 @@
 # Memoria
 
-Aplicación web personal para quienes olvidamos dónde dejamos las llaves, las claves WiFi o la próxima reunión.
+App **móvil-first** (PWA) para guardar llaves, claves, fotos, reuniones y notas de voz, y preguntar por chat o voz.
 
 ## Funciones
 
-- **Objetos y lugares** — texto + etiqueta de ubicación + GPS opcional
-- **Fotos** — captura dónde dejaste algo de valor
-- **Claves** — bóveda cifrada en el dispositivo (AES-GCM + frase maestra)
-- **Reuniones** — fecha/hora y recordatorio en la vista de inicio
-- **Notas de voz** — grabación en el navegador + transcripción manual
-- **Chat** — pregunta en texto o por voz (Web Speech API) y busca en tus recuerdos
+- Objetos, fotos, reuniones, notas de voz, claves (bóveda local)
+- Chat con dictado en español
+- **Backup en la nube cifrado** (cuenta + Postgres en Vercel/Neon)
+- Instalable en pantalla de inicio del celular
 
-Los datos viven en **IndexedDB** (Dexie); no se envían a un servidor por defecto.
-
-## Desarrollo
+## Desarrollo local
 
 ```bash
 npm install
+cp .env.example .env.local   # opcional: AUTH_SECRET + POSTGRES_URL
 npm run dev
 ```
 
-Abre [http://localhost:3000](http://localhost:3000).
+## Publicar en Vercel y dominio propio
+
+Guía paso a paso: **[DEPLOY.md](./DEPLOY.md)**
 
 ## Producción
 
@@ -28,10 +27,3 @@ Abre [http://localhost:3000](http://localhost:3000).
 npm run build
 npm start
 ```
-
-## Próximos pasos posibles
-
-- Sincronización cifrada ( cuenta + backup )
-- Notificaciones push para reuniones
-- Transcripción automática de voz (Whisper / Web Speech)
-- LLM opcional vía `OPENAI_API_KEY` para respuestas más conversacionales

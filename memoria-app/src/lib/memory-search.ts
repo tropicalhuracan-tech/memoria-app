@@ -12,7 +12,6 @@ function normalize(text: string): string {
 const STOP_WORDS = new Set([
   "donde",
   "deje",
-  "deje",
   "dejar",
   "las",
   "los",
