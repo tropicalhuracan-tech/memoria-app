@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f3ff;
+  --foreground: #1e1b4b;
+  --memoria-glow: rgba(124, 58, 237, 0.15);
 }
 
 @theme inline {
@@ -14,8 +15,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0c0a14;
+    --foreground: #ede9fe;
+    --memoria-glow: rgba(139, 92, 246, 0.12);
   }
 }
 
@@ -27,12 +29,57 @@ body {
   overscroll-behavior-y: none;
 }
 
+.memoria-bg {
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -20%, var(--memoria-glow), transparent),
+    linear-gradient(180deg, #ede9fe 0%, #faf5ff 35%, #ffffff 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+  .memoria-bg {
+    background:
+      radial-gradient(ellipse 100% 60% at 50% -10%, var(--memoria-glow), transparent),
+      linear-gradient(180deg, #1e1b4b 0%, #0c0a14 100%);
+  }
+}
+
 .app-shell {
   touch-action: manipulation;
+}
+
+.memoria-card {
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.06);
+}
+
+.memoria-sheet {
+  animation: sheet-up 0.28s ease-out;
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0.6;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 input,
 textarea,
 button {
   font-size: 16px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

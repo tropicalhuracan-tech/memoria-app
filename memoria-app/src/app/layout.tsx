@@ -38,7 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-gradient-to-b from-violet-50 to-white dark:from-zinc-950 dark:to-zinc-900">
+      <body className="min-h-full">
         {children}
       </body>
     </html>

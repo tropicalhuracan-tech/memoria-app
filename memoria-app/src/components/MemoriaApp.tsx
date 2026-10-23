@@ -12,6 +12,7 @@ import { getAllMemories } from "@/lib/db";
 import type { MemoryRecord } from "@/types/memory";
 import { MemoryForm } from "@/components/MemoryForm";
 import { MemoryCard } from "@/components/MemoryCard";
+import { MemoryDetail } from "@/components/MemoryDetail";
 import { ChatPanel } from "@/components/ChatPanel";
 import { VaultSettings } from "@/components/VaultSettings";
 import { CloudAccount } from "@/components/CloudAccount";
@@ -28,6 +29,7 @@ export function MemoriaApp() {
   const [showForm, setShowForm] = useState(false);
   const [vaultReady, setVaultReady] = useState(false);
   const [filter, setFilter] = useState("");
+  const [selected, setSelected] = useState<MemoryRecord | null>(null);
 
   const refresh = useCallback(async () => {
     setMemories(await getAllMemories());
@@ -58,17 +60,17 @@ export function MemoriaApp() {
   }, [memories, filter]);
 
   return (
-    <div className="app-shell mx-auto flex min-h-[100dvh] w-full max-w-md flex-col px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-[calc(0.75rem+env(safe-area-inset-top))]">
+    <div className="app-shell memoria-bg mx-auto flex min-h-[100dvh] w-full max-w-md flex-col px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-[calc(0.75rem+env(safe-area-inset-top))]">
       <header className="mb-4">
-        <div className="flex items-center gap-3">
-          <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 p-2.5 text-white shadow-lg">
+        <div className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/70 p-3 shadow-sm backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/80">
+          <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 p-2.5 text-white shadow-lg ring-2 ring-violet-200/50">
             <Brain className="h-7 w-7" />
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
               Memoria
             </h1>
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">Hecho para tu celular</p>
+            <p className="text-xs text-violet-700/80 dark:text-violet-300">Tu segundo cerebro 🧠</p>
           </div>
         </div>
       </header>
@@ -80,7 +82,7 @@ export function MemoriaApp() {
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 py-4 text-lg font-semibold text-white shadow-md active:scale-[0.98]"
+            className="flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 py-4 text-lg font-semibold text-white shadow-lg active:scale-[0.98]"
           >
             <Plus className="h-6 w-6" />
             Guardar ahora
@@ -117,7 +119,7 @@ export function MemoriaApp() {
             </h2>
             <div className="space-y-3">
               {memories.slice(0, 4).map((m) => (
-                <MemoryCard key={m.id} memory={m} onDeleted={refresh} />
+                <MemoryCard key={m.id} memory={m} onOpen={setSelected} />
               ))}
               {memories.length === 0 && (
                 <p className="text-sm text-zinc-500">
@@ -132,14 +134,14 @@ export function MemoriaApp() {
       {tab === "memories" && (
         <div className="space-y-4">
           <input
-            className="min-h-[48px] w-full rounded-xl border border-zinc-300 px-4 text-base dark:border-zinc-600 dark:bg-zinc-800"
+            className="min-h-[48px] w-full rounded-xl border border-violet-100 bg-white/90 px-4 text-base shadow-sm dark:border-zinc-600 dark:bg-zinc-800"
             placeholder="Buscar…"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
           />
           <div className="space-y-3 pb-2">
             {filtered.map((m) => (
-              <MemoryCard key={m.id} memory={m} onDeleted={refresh} />
+              <MemoryCard key={m.id} memory={m} onOpen={setSelected} />
             ))}
             {filtered.length === 0 && (
               <p className="text-center text-sm text-zinc-500">Nada coincide con la búsqueda.</p>
@@ -167,7 +169,7 @@ export function MemoriaApp() {
         </div>
       )}
 
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-zinc-200 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t border-violet-100 bg-white/90 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_30px_rgba(124,58,237,0.08)] backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
         <div className="relative mx-auto flex h-[4.25rem] max-w-md items-end justify-between px-2">
           {(
             [
@@ -192,7 +194,7 @@ export function MemoriaApp() {
           <button
             type="button"
             onClick={() => setShowForm(true)}
-            className="absolute left-1/2 top-0 flex h-14 w-14 -translate-x-1/2 -translate-y-4 items-center justify-center rounded-full bg-violet-600 text-white shadow-lg ring-4 ring-violet-100 active:scale-95 dark:ring-violet-900"
+            className="absolute left-1/2 top-0 flex h-14 w-14 -translate-x-1/2 -translate-y-4 items-center justify-center rounded-full bg-gradient-to-br from-violet-600 to-indigo-500 text-white shadow-xl ring-4 ring-white active:scale-95 dark:ring-zinc-800"
             aria-label="Guardar recuerdo"
           >
             <Plus className="h-7 w-7" />
@@ -206,6 +208,17 @@ export function MemoriaApp() {
           onSaved={() => {
             refresh();
             setTab("memories");
+          }}
+        />
+      )}
+
+      {selected && (
+        <MemoryDetail
+          memory={selected}
+          onClose={() => setSelected(null)}
+          onDeleted={() => {
+            refresh();
+            setSelected(null);
           }}
         />
       )}
