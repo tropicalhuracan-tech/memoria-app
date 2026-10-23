@@ -17,6 +17,7 @@ import { ChatPanel } from "@/components/ChatPanel";
 import { VaultSettings } from "@/components/VaultSettings";
 import { CloudAccount } from "@/components/CloudAccount";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { WelcomeSplash } from "@/components/WelcomeSplash";
 import { isVaultUnlocked } from "@/lib/vault";
 import { format, isFuture, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
@@ -30,6 +31,7 @@ export function MemoriaApp() {
   const [vaultReady, setVaultReady] = useState(false);
   const [filter, setFilter] = useState("");
   const [selected, setSelected] = useState<MemoryRecord | null>(null);
+  const [hasEntered, setHasEntered] = useState(false);
 
   const refresh = useCallback(async () => {
     setMemories(await getAllMemories());
@@ -59,8 +61,12 @@ export function MemoriaApp() {
     );
   }, [memories, filter]);
 
+  if (!hasEntered) {
+    return <WelcomeSplash onEnter={() => setHasEntered(true)} />;
+  }
+
   return (
-    <div className="app-shell memoria-bg mx-auto flex min-h-[100dvh] w-full max-w-md flex-col px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-[calc(0.75rem+env(safe-area-inset-top))]">
+    <div className="app-shell memoria-bg memoria-fade-in mx-auto flex min-h-[100dvh] w-full max-w-md flex-col px-4 pb-[calc(5.5rem+env(safe-area-inset-bottom))] pt-[calc(0.75rem+env(safe-area-inset-top))]">
       <header className="mb-4">
         <div className="flex items-center gap-3 rounded-2xl border border-white/60 bg-white/70 p-3 shadow-sm backdrop-blur dark:border-zinc-700 dark:bg-zinc-900/80">
           <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 p-2.5 text-white shadow-lg ring-2 ring-violet-200/50">
