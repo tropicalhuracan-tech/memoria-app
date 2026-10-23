@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-
-export const dynamic = "force-dynamic";
 import { readSession } from "@/lib/server/auth";
 import { ensureSchema, sql } from "@/lib/server/db";
 import { isCloudConfigured } from "@/lib/server/env";
