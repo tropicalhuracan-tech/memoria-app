@@ -17,9 +17,14 @@ export const metadata: Metadata = {
   description:
     "Guarda dónde dejaste las llaves, claves, reuniones, fotos y notas de voz. Pregunta por chat o voz.",
   manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/apple-icon.svg", sizes: "180x180", type: "image/svg+xml" }],
+  },
   appleWebApp: {
     capable: true,
     title: "Memoria",
+    statusBarStyle: "black-translucent",
   },
 };
 

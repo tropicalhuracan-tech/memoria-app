@@ -4,7 +4,7 @@
   "description": "Tu segundo cerebro personal",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5f3ff",
+  "background_color": "#7c3aed",
   "theme_color": "#7c3aed",
   "lang": "es",
   "icons": [
@@ -12,7 +12,13 @@
       "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 }
