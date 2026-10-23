@@ -9,10 +9,37 @@ function normalize(text: string): string {
     .replace(/\p{Diacritic}/gu, "");
 }
 
+const STOP_WORDS = new Set([
+  "donde",
+  "deje",
+  "deje",
+  "dejar",
+  "las",
+  "los",
+  "una",
+  "uno",
+  "que",
+  "cual",
+  "cuando",
+  "como",
+  "tengo",
+  "mi",
+  "mis",
+  "me",
+  "el",
+  "la",
+  "del",
+  "de",
+  "por",
+  "recuerda",
+  "recuerdame",
+]);
+
 function tokenize(query: string): string[] {
   return normalize(query)
+    .replace(/[¿?¡!.,]/g, " ")
     .split(/\s+/)
-    .filter((t) => t.length > 1);
+    .filter((t) => t.length > 1 && !STOP_WORDS.has(t));
 }
 
 export interface SearchHit {
