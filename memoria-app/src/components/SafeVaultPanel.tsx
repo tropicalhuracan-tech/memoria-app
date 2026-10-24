@@ -23,6 +23,7 @@ import {
 import { deleteSafePhoto, getSafePhotos, saveSafePhoto } from "@/lib/db";
 import type { SafePhoto } from "@/types/safe";
 import { newId } from "@/lib/id";
+import { generateShareCode } from "@/lib/share-code";
 
 type Mode = "setup" | "unlock" | "open" | "add" | "share" | "receive";
 
@@ -41,7 +42,7 @@ export function SafeVaultPanel() {
   const [addNote, setAddNote] = useState("");
   const [addImage, setAddImage] = useState<string | undefined>();
 
-  const [shareCode, setShareCode] = useState("");
+  const [generatedCode, setGeneratedCode] = useState("");
   const [shareLink, setShareLink] = useState("");
   const [shareBusy, setShareBusy] = useState(false);
 
@@ -62,8 +63,7 @@ export function SafeVaultPanel() {
     const params = new URLSearchParams(window.location.search);
     const recibir = params.get("recibir");
     if (recibir) {
-      setRecvId(recibir);
-      setMode("receive");
+      window.location.replace(`/ver/${encodeURIComponent(recibir)}`);
     }
   }, [refresh]);
 
@@ -160,16 +160,16 @@ export function SafeVaultPanel() {
   }
 
   async function publishShare() {
-    if (!selected || !validatePinFormat(shareCode)) {
-      setError("El código para compartir debe ser 4 números.");
-      return;
-    }
+    if (!selected || !previewUrl) return;
     setShareBusy(true);
     setError("");
+    setGeneratedCode("");
+    setShareLink("");
     try {
+      const shareCode = generateShareCode();
       const outer = await buildSharePayload(
         shareCode,
-        previewUrl!,
+        previewUrl,
         selected.title,
         selected.note,
       );
@@ -180,12 +180,21 @@ export function SafeVaultPanel() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Error");
-      const link = `${window.location.origin}/?recibir=${data.shareId}`;
+      const link = `${window.location.origin}/ver/${data.shareId}`;
+      setGeneratedCode(shareCode);
       setShareLink(link);
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo compartir. ¿Nube activa?");
     } finally {
       setShareBusy(false);
+    }
+  }
+
+  async function copyText(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      /* ignore */
     }
   }
 
@@ -324,34 +333,59 @@ export function SafeVaultPanel() {
   if (mode === "share" && selected) {
     return (
       <div className="space-y-4 rounded-3xl border border-zinc-700 bg-zinc-900 p-4 text-white">
-        <h2 className="font-bold text-amber-400">Compartir con código</h2>
+        <h2 className="font-bold text-amber-400">Compartir fuera de la app</h2>
         <p className="text-sm text-zinc-400">
-          Elige 4 números que le dirás solo a esa persona. Sin el código nadie puede ver la foto.
+          La app genera un <strong className="text-amber-200">código de 4 números</strong> y un enlace. La otra persona abre el enlace en
+          Safari o Chrome — <strong className="text-amber-200">sin instalar Memoria</strong> — y pone el código.
         </p>
         {previewUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={previewUrl} alt="" className="max-h-40 w-full rounded-xl object-cover" />
         )}
-        <PinPad value={shareCode} onChange={setShareCode} />
-        {shareLink ? (
-          <div className="rounded-xl bg-zinc-800 p-3 text-sm">
-            <p className="text-amber-300">Enlace (72 h):</p>
-            <p className="mt-1 break-all text-xs">{shareLink}</p>
-            <p className="mt-2 text-zinc-400">Dile también el código de 4 números por teléfono o WhatsApp.</p>
+        {generatedCode && shareLink ? (
+          <div className="space-y-3 rounded-2xl border border-amber-500/40 bg-zinc-800 p-4">
+            <p className="text-center text-xs uppercase tracking-wide text-zinc-400">Código secreto (léelo o envíalo)</p>
+            <p className="text-center font-mono text-5xl font-bold tracking-[0.35em] text-amber-400">
+              {generatedCode}
+            </p>
+            <button
+              type="button"
+              onClick={() => copyText(generatedCode)}
+              className="w-full rounded-xl bg-zinc-700 py-2 text-sm"
+            >
+              Copiar código
+            </button>
+            <p className="text-xs text-zinc-500">Enlace (válido 72 h, cualquier navegador):</p>
+            <p className="break-all text-sm text-violet-300">{shareLink}</p>
+            <button
+              type="button"
+              onClick={() => copyText(`${shareLink}\n\nCódigo: ${generatedCode}`)}
+              className="w-full rounded-xl bg-amber-500 py-3 font-semibold text-zinc-900"
+            >
+              Copiar enlace + código
+            </button>
           </div>
         ) : (
           <button
             type="button"
-            disabled={shareBusy || shareCode.length !== 4}
+            disabled={shareBusy}
             onClick={publishShare}
             className="flex w-full items-center justify-center gap-2 rounded-2xl bg-amber-500 py-3 font-semibold text-zinc-900 disabled:opacity-50"
           >
             <Share2 className="h-5 w-5" />
-            {shareBusy ? "Creando enlace…" : "Generar enlace seguro"}
+            {shareBusy ? "Generando…" : "Generar código y enlace"}
           </button>
         )}
         {error && <p className="text-sm text-red-400">{error}</p>}
-        <button type="button" onClick={() => { setMode("open"); setShareLink(""); setShareCode(""); }} className="w-full py-2 text-sm underline">
+        <button
+          type="button"
+          onClick={() => {
+            setMode("open");
+            setShareLink("");
+            setGeneratedCode("");
+          }}
+          className="w-full py-2 text-sm underline"
+        >
           Volver
         </button>
       </div>

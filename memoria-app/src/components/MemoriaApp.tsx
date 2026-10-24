@@ -44,6 +44,11 @@ export function MemoriaApp() {
     refresh();
   }, [refresh]);
 
+  useEffect(() => {
+    const recibir = new URLSearchParams(window.location.search).get("recibir");
+    if (recibir) window.location.replace(`/ver/${encodeURIComponent(recibir)}`);
+  }, []);
+
   const upcoming = useMemo(
     () =>
       memories
