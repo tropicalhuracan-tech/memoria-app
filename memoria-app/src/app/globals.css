@@ -139,6 +139,10 @@ body {
   animation: enter-glow 2s ease-in-out infinite;
 }
 
+.safe-panel {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(251, 191, 36, 0.15);
+}
+
 @keyframes enter-glow {
   0%,
   100% {

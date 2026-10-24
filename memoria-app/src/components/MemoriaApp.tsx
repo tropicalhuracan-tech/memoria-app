@@ -7,6 +7,7 @@ import {
   Settings2,
   List,
   Plus,
+  Vault,
 } from "lucide-react";
 import { getAllMemories } from "@/lib/db";
 import type { MemoryRecord } from "@/types/memory";
@@ -18,11 +19,12 @@ import { VaultSettings } from "@/components/VaultSettings";
 import { CloudAccount } from "@/components/CloudAccount";
 import { InstallPrompt } from "@/components/InstallPrompt";
 import { WelcomeSplash } from "@/components/WelcomeSplash";
+import { SafeVaultPanel } from "@/components/SafeVaultPanel";
 import { isVaultUnlocked } from "@/lib/vault";
 import { format, isFuture, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
-type Tab = "home" | "memories" | "chat" | "account";
+type Tab = "home" | "memories" | "safe" | "chat" | "account";
 
 export function MemoriaApp() {
   const [tab, setTab] = useState<Tab>("home");
@@ -156,6 +158,8 @@ export function MemoriaApp() {
         </div>
       )}
 
+      {tab === "safe" && <SafeVaultPanel />}
+
       {tab === "chat" && <ChatPanel vaultReady={vaultReady} />}
 
       {tab === "account" && (
@@ -181,6 +185,7 @@ export function MemoriaApp() {
             [
               ["home", "Inicio", Brain],
               ["memories", "Lista", List],
+              ["safe", "Caja fuerte", Vault],
               ["chat", "Chat", MessageCircle],
               ["account", "Cuenta", Settings2],
             ] as const

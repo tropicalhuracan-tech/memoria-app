@@ -27,6 +27,13 @@ export async function ensureSchema(): Promise<void> {
           updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )
       `;
+      await db`
+        CREATE TABLE IF NOT EXISTS safe_shares (
+          id TEXT PRIMARY KEY,
+          ciphertext TEXT NOT NULL,
+          expires_at TIMESTAMPTZ NOT NULL
+        )
+      `;
     })();
   }
   await schemaReady;
